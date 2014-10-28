@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Operations Version="1.0" xmlns="http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02">
+  <Operation Name="Rename Refactor" Key="8ec8a44b-ca5c-4504-8a7c-aa8e81da5e90" ChangeDateTime="10/28/2014 18:45:55">
+    <Property Name="ElementName" Value="[dbo].[IdentityUserClaim].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[IdentityUserClaim]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="ClaimId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="64756edb-dd5a-4007-8121-db9b7ba168a9" ChangeDateTime="10/28/2014 18:49:06">
+    <Property Name="ElementName" Value="[dbo].[IdentityUserClaimType].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[IdentityUserClaimType]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="TypeId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c16ace00-5da0-43c6-bec4-62c53d3d9524" ChangeDateTime="10/28/2014 18:50:52">
+    <Property Name="ElementName" Value="[dbo].[IdentityUserLogin].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[IdentityUserLogin]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="UserId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="22b06631-204b-46bc-bcad-0eeb1b21eac8" ChangeDateTime="10/28/2014 18:55:21">
+    <Property Name="ElementName" Value="[dbo].[IdentityUserRole].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[IdentityUserRole]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="UserId" />
+  </Operation>
+</Operations>

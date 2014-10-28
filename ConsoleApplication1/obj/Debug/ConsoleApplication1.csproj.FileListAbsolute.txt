@@ -1,0 +1,5 @@
+C:\Projects\NetArgot\ConsoleApplication1\bin\Debug\ConsoleApplication1.exe.config
+C:\Projects\NetArgot\ConsoleApplication1\bin\Debug\ConsoleApplication1.exe
+C:\Projects\NetArgot\ConsoleApplication1\bin\Debug\ConsoleApplication1.pdb
+C:\Projects\NetArgot\ConsoleApplication1\obj\Debug\ConsoleApplication1.exe
+C:\Projects\NetArgot\ConsoleApplication1\obj\Debug\ConsoleApplication1.pdb

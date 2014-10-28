@@ -158,11 +158,22 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="DataStore\IdentityDbContext.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Identity\IdentityRoleStore.cs" />
+    <Compile Include="Identity\IdentityUserManager.cs" />
+    <Compile Include="Identity\IdentityUserStore.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\Identity\IdentityRole.cs" />
+    <Compile Include="Models\Identity\IdentityUser.cs" />
+    <Compile Include="Models\Identity\IdentityUserClaim.cs" />
+    <Compile Include="Models\Identity\IdentityUserClaimJoined.cs" />
+    <Compile Include="Models\Identity\IdentityUserClaimType.cs" />
+    <Compile Include="Models\Identity\IdentityUserLogin.cs" />
+    <Compile Include="Models\Identity\IdentityUserRole.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />

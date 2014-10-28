@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
+using NetArgot.Identity;
 using NetArgot.Models;
 
 namespace NetArgot.Controllers
@@ -17,17 +18,17 @@ namespace NetArgot.Controllers
         {
         }
 
-        public ManageController(ApplicationUserManager userManager)
+        public ManageController(IdentityUserManager userManager)
         {
             UserManager = userManager;
         }
 
-        private ApplicationUserManager _userManager;
-        public ApplicationUserManager UserManager
+        private IdentityUserManager _userManager;
+        public IdentityUserManager UserManager
         {
             get
             {
-                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
+                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<IdentityUserManager>();
             }
             private set
             {

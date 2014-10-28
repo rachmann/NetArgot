@@ -1,0 +1,5 @@
+C:\Projects\NetArgot\NetArgot.SQL\bin\Debug\NetArgot.SQL.dacpac
+C:\Projects\NetArgot\NetArgot.SQL\bin\Debug\NetArgot.SQL.dll
+C:\Projects\NetArgot\NetArgot.SQL\bin\Debug\NetArgot.SQL.pdb
+C:\Projects\NetArgot\NetArgot.SQL\obj\Debug\NetArgot.SQL.dll
+C:\Projects\NetArgot\NetArgot.SQL\obj\Debug\NetArgot.SQL.pdb

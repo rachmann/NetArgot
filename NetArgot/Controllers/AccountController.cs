@@ -9,6 +9,8 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using NetArgot.Models;
+using NetArgot.Models.Identity;
+using NetArgot.Identity;
 
 namespace NetArgot.Controllers
 {
@@ -20,19 +22,19 @@ namespace NetArgot.Controllers
         {
         }
 
-        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager )
+        public AccountController(IdentityUserManager userManager, ApplicationSignInManager signInManager )
         {
             UserManager = userManager;
             SignInManager = signInManager;
         }
 
-        private ApplicationUserManager _userManager;
+        private IdentityUserManager _userManager;
 
-        public ApplicationUserManager UserManager
+        public IdentityUserManager UserManager
         {
             get
             {
-                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
+                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<IdentityUserManager>();
             }
             private set
             {
