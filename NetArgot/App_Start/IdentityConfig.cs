@@ -10,6 +10,7 @@ using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using NetArgot.Identity;
 using NetArgot.Models;
+using NetArgot.Models.Identity;
 
 namespace NetArgot
 {
@@ -52,14 +53,14 @@ namespace NetArgot
 
  
     // Configure the application sign-in manager which is used in this application.
-    public class ApplicationSignInManager : SignInManager<ApplicationUser, int>
+    public class ApplicationSignInManager : SignInManager<IdentityUser, int>
     {
         public ApplicationSignInManager(IdentityUserManager userManager, IAuthenticationManager authenticationManager)
             : base(userManager, authenticationManager)
         {
         }
 
-        public override Task<ClaimsIdentity> CreateUserIdentityAsync(ApplicationUser user)
+        public override Task<ClaimsIdentity> CreateUserIdentityAsync(IdentityUser user)
         {
             return user.GenerateUserIdentityAsync((IdentityUserManager)UserManager);
         }

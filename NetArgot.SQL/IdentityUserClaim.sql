@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[IdentityUserClaim]
 (
-	[ClaimId] INT NOT NULL, 
+	[ClaimId] INT IDENTITY (1, 1) NOT NULL,
     [UserId] INT NOT NULL, 
     [ClaimTypeId] INT NOT NULL, 
     [ClaimValue] NVARCHAR(20) NOT NULL, 

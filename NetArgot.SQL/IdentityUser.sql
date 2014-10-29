@@ -7,7 +7,7 @@
     [EmailConfirmed] BIT NOT NULL, 
     [PasswordHash] NVARCHAR(200) NOT NULL, 
     [SecurityStamp] NVARCHAR(200) NOT NULL, 
-    [PhoneNumber] NVARCHAR(20) NOT NULL, 
+    [PhoneNumber] NVARCHAR(20) NULL, 
     [PhoneNumberConfirmed] BIT NOT NULL, 
     [TwoFactorEnabled] BIT NOT NULL, 
     [LockoutEndDateUtc] DATETIME NULL, 

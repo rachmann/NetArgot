@@ -33,26 +33,13 @@ namespace NetArgot.Models
             this.Description = description;
         }
     }
-
-    // You can add profile data for the user by adding more properties to your ApplicationUser class, please visit http://go.microsoft.com/fwlink/?LinkID=317594 to learn more.
-    public class ApplicationUser : IdentityUser, IUser<int>
-    {
-        public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser, int> manager)
-        {
-            // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
-            var userIdentity = await manager.CreateIdentityAsync(this, DefaultAuthenticationTypes.ApplicationCookie);
-            // Add custom user claims here
-            return userIdentity;
-        }
-    }
-
+    
     public class ApplicationDbContext: IdentityDbContext
     {
         public ApplicationDbContext()
             : base()
         {
         }
-
         public static ApplicationDbContext Create()
         {
             return new ApplicationDbContext();
@@ -60,7 +47,7 @@ namespace NetArgot.Models
     }
 
 
-    public class ApplicationUserStore : IdentityUserStore<ApplicationUser>, IDisposable
+    public class ApplicationUserStore : IdentityUserStore<IdentityUser>, IDisposable
     {
         public ApplicationUserStore()
             : this((DbConnection)(new ApplicationDbContext().Connection))

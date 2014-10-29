@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using Dapper;
+using DapperExtensions;
 using Microsoft.AspNet.Identity;
 using NetArgot.DataStore;
 using NetArgot.Models;
@@ -12,8 +15,9 @@ using NetArgot.Models.Identity;
 
 namespace NetArgot.Identity
 {
-    public class IdentityRoleStore<TRole> : IQueryableRoleStore<TRole, int>
-     where TRole : IdentityRole
+    public class IdentityRoleStore<TRole> :
+        IQueryableRoleStore<TRole, int>
+        where TRole : IdentityRole
     {
 
         public IdentityDbContext Database { get; private set; }
@@ -21,7 +25,7 @@ namespace NetArgot.Identity
         {
             get
             {
-                throw new NotImplementedException();
+                return Database.Connection.GetList<TRole>().AsQueryable();
             }
         }
 
@@ -65,9 +69,8 @@ namespace NetArgot.Identity
                 throw new ArgumentNullException("role");
             }
 
-            //TODO Add Db stuff
+            return Task.Factory.StartNew(() => Database.Connection.Insert<IdentityRole>(role));
 
-            return Task.FromResult<object>(null);
         }
 
         public Task DeleteAsync(TRole role)
@@ -76,28 +79,17 @@ namespace NetArgot.Identity
             {
                 throw new ArgumentNullException("role");
             }
-
-            //TODO Add Db stuff
-
-            return Task.FromResult<Object>(null);
+            return Task.Factory.StartNew(() => Database.Connection.Delete<IdentityRole>(role));
         }
 
         public Task<TRole> FindByIdAsync(int roleId)
         {
-            //TRole result = roleTable.GetRoleById(roleId) as TRole;
-            //TODO Add Db stuff
-
-            TRole result = null;
-            return Task.FromResult<TRole>(result);
+            return Task.Factory.StartNew(() => Database.Connection.Get<TRole>(roleId));
         }
 
         public Task<TRole> FindByNameAsync(string roleName)
         {
-            //TODO Add Db stuff
-
-            TRole result = null;
-
-            return Task.FromResult<TRole>(result);
+            return Task.Factory.StartNew(() => Database.Connection.Query<TRole>("SELECT * FROM IdentityRole WHERE Name = @roleName", new { roleName }).FirstOrDefault());
         }
 
         public Task UpdateAsync(TRole role)
@@ -106,15 +98,15 @@ namespace NetArgot.Identity
             {
                 throw new ArgumentNullException("role");
             }
-            //TODO Add Db stuff
-
-            return Task.FromResult<Object>(null);
+            return Task.Factory.StartNew(() => Database.Connection.Update<IdentityRole>(role));
         }
 
         public void Dispose()
         {
             if (Database != null)
             {
+                if (Database.Connection != null && Database.Connection.State == ConnectionState.Open)
+                    Database.Connection.Close();
                 Database.Dispose();
                 Database = null;
             }

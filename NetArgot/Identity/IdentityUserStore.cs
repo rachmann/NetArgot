@@ -23,42 +23,42 @@ namespace NetArgot.Identity
         IUserRoleStore<TUser, int>,
         IUserSecurityStampStore<TUser, int>,
         IUserPhoneNumberStore<TUser, int>,
-        IQueryableUserStore<TUser, int>,
         IUserEmailStore<TUser, int>,
         IUserTwoFactorStore<TUser, int>
-        where TUser : IdentityUser
+        where TUser : IdentityUser //IQueryableUserStore<TUser, int>,
     {
 
-    public DbConnection Connection { get; private set; }
+        public DbConnection Connection { get; private set; }
 
-    public IdentityUserStore(ApplicationDbContext context)
-    {
-        if (context == null)
+        public IdentityUserStore(ApplicationDbContext context)
         {
-            throw new ArgumentNullException("context");
-        }
-        Connection = (DbConnection)context.Connection;
-    }
-    public IdentityUserStore(DbConnection connection)
-    {
-        if (connection == null)
-        {
-            throw new ArgumentNullException("connection");
-        }
-        Connection = connection;
-    }
-    public void Dispose()
-    {
-        if (Connection != null)
-        {
-            if (Connection.State == ConnectionState.Open)
+            if (context == null)
             {
-                Connection.Close();
+                throw new ArgumentNullException("context");
             }
-            Connection.Dispose();
+            Connection = (DbConnection)context.Connection;
         }
-    }
 
+        public IdentityUserStore(DbConnection connection)
+        {
+            if (connection == null)
+            {
+                throw new ArgumentNullException("connection");
+            }
+            Connection = connection;
+        }
+
+        public void Dispose()
+        {
+            if (Connection != null)
+            {
+                if (Connection.State == ConnectionState.Open)
+                {
+                    Connection.Close();
+                }
+                Connection.Dispose();
+            }
+        }
 
         public Task CreateAsync(TUser user)
         {
@@ -66,19 +66,18 @@ namespace NetArgot.Identity
             {
                 if (user != null)
                 {
-                    Connection.Insert(user);
+                    Connection.Insert<TUser>(user);
                 }
             });
         }
 
         public Task UpdateAsync(TUser user)
         {
-
             return Task.Factory.StartNew(() =>
             {
                 if (user != null)
                 {
-                    Connection.Update(user);
+                        Connection.Update<TUser>(user);
                 }
             });
         }
@@ -89,19 +88,22 @@ namespace NetArgot.Identity
             {
                 if (user != null)
                 {
-                    Connection.Delete(user);
+                    Connection.Delete<TUser>(user);
                 }
             });
         }
 
         public Task<TUser> FindByIdAsync(int userId)
         {
-            return Task.Factory.StartNew(() => Connection.Get<TUser>(userId));
+            return Task.Factory.StartNew(() => (Connection.Get<TUser>(userId)));
         }
 
         public Task<TUser> FindByNameAsync(string userName)
         {
-            return Task.Factory.StartNew(() => Connection.Query<TUser>("SELECT * FROM IdentityUser WHERE UserName = @userName", new { userName }).FirstOrDefault());
+            //var predicate = Predicates.Field<TUser>(f => f.UserName, Operator.Eq, userName);
+            //return Task.Factory.StartNew(() => Connection.Get<TUser>(predicate));
+
+            return Task.Factory.StartNew(() => Connection.Query<TUser>("select * from IdentityUser where UserName = @userName", new { userName }).FirstOrDefault());
         }
 
         public Task AddLoginAsync(TUser user, UserLoginInfo login)
@@ -112,10 +114,11 @@ namespace NetArgot.Identity
                 var userItem = Connection.Get<TUser>(user.Id);
                 if (userItem != null)
                 {
-                    var userLoginItem =
-                        Connection.Query<IdentityUserLogin>(
-                            "SELECT * FROM IdentityUserLogin WHERE UserId = @Id AND ProviderKey = @ProviderKey",
-                            new { user.Id, login.ProviderKey }).FirstOrDefault();
+                    //var pg = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                    //pg.Predicates.Add(Predicates.Field<IdentityUserLogin>(f => f.UserId, Operator.Eq, user.Id));
+                    //pg.Predicates.Add(Predicates.Field<IdentityUserLogin>(f => f.ProviderKey, Operator.Eq, login.ProviderKey));
+
+                    var userLoginItem = Connection.Query<IdentityUserLogin>("SELECT * FROM IdentityUserLogin WHERE UserId = @Id AND ProviderKey = @ProviderKey", new { user.Id, login.ProviderKey}).FirstOrDefault();
                     if (userLoginItem == null)
                     {
                         Connection.Insert(
@@ -135,11 +138,14 @@ namespace NetArgot.Identity
             return Task.Factory.StartNew(() =>
             {
                 //does this user exist?
-                var userItem = Connection.Get<IdentityUser>(user.Id);
+                var userItem = Connection.Get<TUser>(user.Id);
                 if (userItem != null)
                 {
-                    var userLoginItem = Connection.Query<IdentityUserLogin>("SELECT * FROM IdentityUserLogin WHERE UserId = @Id AND ProviderKey = @ProviderKey", new { user.Id, login.ProviderKey }).FirstOrDefault();
+                    //var pg = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                    //pg.Predicates.Add(Predicates.Field<IdentityUserLogin>(f => f.UserId, Operator.Eq, user.Id));
+                    //pg.Predicates.Add(Predicates.Field<IdentityUserLogin>(f => f.ProviderKey, Operator.Eq, login.ProviderKey));
 
+                    var userLoginItem = Connection.Query<IdentityUserLogin>("SELECT * FROM IdentityUserLogin WHERE UserId = @Id AND ProviderKey = @ProviderKey", new { user.Id, login.ProviderKey }).FirstOrDefault();
                     if (userLoginItem != null)
                     {
                         Connection.Delete(userLoginItem);
@@ -152,12 +158,13 @@ namespace NetArgot.Identity
         {
             return Task.Factory.StartNew(() =>
             {
-                //does this user exist?
                 List<UserLoginInfo> logins = null;
-                var userItem = Connection.Get<IdentityUser>(user.Id);
+                var userItem = Connection.Get<TUser>(user.Id);
                 if (userItem != null)
                 {
-                    logins = Connection.Query<IdentityUserLogin>("SELECT * FROM [dbo].[IdentityUserLogin] WHERE UserId = @Id;", new { user.Id }).Select(culi => new UserLoginInfo(culi.LoginProvider, culi.ProviderKey)).ToList();
+                    // var predicate = Predicates.Field<IdentityUserLogin>(f => f.UserId, Operator.Eq, user.Id);
+                    // logins = Connection.GetList<IdentityUserLogin>(predicate).Select(culi => new UserLoginInfo(culi.LoginProvider, culi.ProviderKey)).ToList();
+                    logins = Connection.Query<IdentityUserLogin>("SELECT * FROM IdentityUserLogin WHERE UserId = @Id", new { user.Id }).Select(culi => new UserLoginInfo(culi.LoginProvider, culi.ProviderKey)).ToList();
                 }
 
                 return (IList<UserLoginInfo>)logins;
@@ -168,15 +175,21 @@ namespace NetArgot.Identity
         {
             return Task.Factory.StartNew(() =>
             {
-                //does this user exist?
-                IdentityUser user = null;
-                var userLoginItem = Connection.Query<IdentityUserLogin>("SELECT * FROM [dbo].[IdentityUserLogin] WHERE [LoginProvider] = @LoginProvider AND [ProviderKey] = @ProviderKey;", new { login.LoginProvider, login.ProviderKey }).FirstOrDefault();
+                TUser user = null;
+                //var pg = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                //pg.Predicates.Add(Predicates.Field<IdentityUserLogin>(f => f.LoginProvider, Operator.Eq, login.LoginProvider));
+                //pg.Predicates.Add(Predicates.Field<IdentityUserLogin>(f => f.ProviderKey, Operator.Eq, login.ProviderKey));
+
+                //var userLoginItem = Connection.Get<IdentityUserLogin>(pg);
+
+                var userLoginItem = Connection.Query<IdentityUserLogin>("SELECT * FROM IdentityUserLogin WHERE LoginProvider = @LoginProvider AND ProviderKey = @ProviderKey", new { login.LoginProvider, login.ProviderKey }).FirstOrDefault();
+
                 if (userLoginItem != null)
                 {
-                    user = Connection.Get<IdentityUser>(userLoginItem.UserId);
+                    user = Connection.Get<TUser>(userLoginItem.UserId);
                 }
 
-                return (TUser)user;
+                return user;
             });
         }
 
@@ -186,26 +199,13 @@ namespace NetArgot.Identity
             {
                 //does this user exist?
                 List<Claim> claims = null;
-                var userItem = Connection.Get<IdentityUser>(user.Id);
+                var userItem = Connection.Get<TUser>(user.Id);
                 if (userItem != null)
                 {
-
                     claims = Connection.Query<IdentityUserClaimJoined>("SELECT cuc.*, cuct.ClaimTypeCode FROM IdentityUserClaim cuc INNER JOIN IdentityUserClaimType cuct ON cuc.ClaimTypeId = cuct.TypeId WHERE UserId = @Id;",
                     new { user.Id }).Select(cuc =>
                         new Claim(cuc.ClaimTypeCode, cuc.ClaimValue, cuc.ClaimValueType, cuc.Issuer))
                            .ToList();
-                    //var xclaims = _sqlConn.Query<IdentityUserClaim>("select * from [dbo].[IdentityUserClaim] where IdentityUserId = @IdentityUserId;",  new { user.IdentityUserId}).ToList();
-                    //if (xclaims.Count > 0)
-                    //{
-                    //    claims = new List<Claim>();
-                    //    foreach (var cuc in xclaims)
-                    //    {
-                    //        var ct = types.FirstOrDefault(t => t.IdentityUserClaimTypeId == cuc.IdentityUserClaimTypeId);
-                    //        claims.Add(new Claim(ct.IdentityUserClaimTypeCode, cuc.IdentityUserClaimValue, cuc.IdentityUserClaimCode, cuc.IdentityUserClaimDesc));
-                    //    }
-                    //}
-
-
                 }
 
                 return (IList<Claim>)claims;
@@ -217,19 +217,14 @@ namespace NetArgot.Identity
             return Task.Factory.StartNew(() =>
             {
                 //does this user exist?
-                var userItem = Connection.Get<IdentityUser>(user.Id);
+                var userItem = Connection.Get<TUser>(user.Id);
                 if (userItem != null)
                 {
-                    // IdentityUserClaimType  = Claim.Type
-                    // IdentityUserClaimValue = Claim.Value
-                    // IdentityUserClaimCode  = Claim.ValueType
-                    // IdentityUserClaimDesc =  Claim.Subject  
-
                     var oldClaim =
                         Connection.Query<IdentityUserClaim>(
-                            "select cuc.* from IdentityUserClaim cuc " +
-                            "inner join IdentityUserClaimType cuct on cuc.ClaimTypeId = cuct.TypeId " +
-                               "where cuc.UserId = @Id AND " +
+                            "SELECT cuc.* FROM IdentityUserClaim cuc " +
+                            "INNER JOIN IdentityUserClaimType cuct ON cuc.ClaimTypeId = cuct.TypeId " +
+                               "WHERE cuc.UserId = @Id AND " +
                                "cuct.ClaimTypeCode = @Type AND " +
                                "cuc.ClaimValue = @Value AND " +
                                "cuc.Issuer = @Issuer;",
@@ -239,7 +234,7 @@ namespace NetArgot.Identity
                     {
                         var theClaimType =
                        Connection.Query<IdentityUserClaimType>(
-                           "select * from IdentityUserClaimType where cuct.IdentityUserClaimTypeCode = @Type;",
+                           "SELECT * FROM IdentityUserClaimType WHERE cuct.IdentityUserClaimTypeCode = @Type;",
                            new { claim.Type })
                            .FirstOrDefault();
 
@@ -267,7 +262,7 @@ namespace NetArgot.Identity
                 //does this user exist?
                 var userItem = Connection.Get<TUser>(user.Id);
                 var theClaimType = Connection.Query<IdentityUserClaimType>(
-                       "select * from IdentityUserClaimType where cuct.ClaimTypeCode = @Type;",
+                       "SELECT * FROM IdentityUserClaimType WHERE cuct.ClaimTypeCode = @Type;",
                        new { claim.Type })
                        .FirstOrDefault();
 
@@ -275,7 +270,7 @@ namespace NetArgot.Identity
                 {
                     var oldClaim =
                         Connection.Query<IdentityUserClaim>(
-                            "select * from [dbo].[IdentityUserClaim] where UserId = @Id AND ClaimTypeId = @TypeId  AND ClaimValue = @Value; AND CloudUserClaimDesc = @Issuer;",
+                            "SELECT * FROM [dbo].[IdentityUserClaim] WHERE UserId = @Id AND ClaimTypeId = @TypeId AND ClaimValue = @Value; AND CloudUserClaimDesc = @Issuer;",
                             new { user.Id, theClaimType.TypeId, claim.Value, claim.Issuer })
                             .FirstOrDefault();
                     if (oldClaim != null)
@@ -306,100 +301,174 @@ namespace NetArgot.Identity
             return Task.Factory.StartNew(() =>
             {
                 //does this role exist?
+                //var predicateRole = Predicates.Field<IdentityRole>(f => f.Name, Operator.Eq, roleName);
+                //var roleItem = Connection.Get<IdentityRole>(predicateRole);
                 var roleItem = Connection.Query<IdentityRole>("SELECT * FROM IdentityRole WHERE Name = @roleName", new { roleName }).FirstOrDefault();
+
                 if (roleItem != null)
                 {
                     //does this user & role combo already exist?
+                    //var pg = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                    //pg.Predicates.Add(Predicates.Field<IdentityUserRole>(f => f.UserId, Operator.Eq, user.Id));
+                    //pg.Predicates.Add(Predicates.Field<IdentityUserRole>(f => f.RoleId, Operator.Eq, roleItem.Id));
+                    //var roleUserItem = Connection.Get<IdentityUserRole>(pg);
+
                     var roleUserItem = Connection.Query<IdentityUserRole>("SELECT * FROM IdentityUserRole WHERE UserId = @Id AND RoleId = @RoleId", new { user.Id, RoleId = roleItem.Id }).FirstOrDefault();
+
                     if (roleUserItem == null)
                     {
                         // no - so add
                         Connection.Insert(new IdentityUserRole { UserId = user.Id, RoleId = roleItem.Id });
                     }
-
                 }
             });
         }
 
         public Task RemoveFromRoleAsync(TUser user, string roleName)
         {
-            throw new NotImplementedException();
+            return Task.Factory.StartNew(() =>
+            {
+                //does this role exist?
+                //var predicateRole = Predicates.Field<IdentityRole>(f => f.Name, Operator.Eq, roleName);
+                //var roleItem = Connection.Get<IdentityRole>(predicateRole);
+                var roleItem = Connection.Query<IdentityRole>("SELECT * FROM IdentityRole WHERE Name = @roleName", new { roleName }).FirstOrDefault();
+
+                if (roleItem != null)
+                {
+                    //does this user & role combo already exist?
+                    //var pg = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                    //pg.Predicates.Add(Predicates.Field<IdentityUserRole>(f => f.UserId, Operator.Eq, user.Id));
+                    //pg.Predicates.Add(Predicates.Field<IdentityUserRole>(f => f.RoleId, Operator.Eq, roleItem.Id));
+                    //var roleUserItem = Connection.Get<IdentityUserRole>(pg);
+
+                    var roleUserItem = Connection.Query<IdentityUserRole>("SELECT * FROM IdentityUserRole WHERE UserId = @Id AND RoleId = @RoleId", new { user.Id, RoleId = roleItem.Id }).FirstOrDefault();
+
+                    if (roleUserItem != null)
+                    {
+                        // yes - so delete
+                        Connection.Delete(roleUserItem);
+                    }
+
+                }
+            });
         }
 
         public Task<IList<string>> GetRolesAsync(TUser user)
         {
-            throw new NotImplementedException();
+            return Task.Factory.StartNew(() =>
+            {
+                //does this role exist?
+                //does this user & role combo already exist?
+                var results = Connection.Query<IdentityRole>(@"SELECT IdentityRole.* FROM IdentityUserRole ur
+                             INNER JOIN IdentityRole on IdentityRole.Id = ur.RoleId WHERE ur.UserId = @Id", new { user.Id }).ToList();
+
+                var retList = results.Select(r => r.Name).ToList();
+                return (IList<string>)retList;
+            });
         }
 
         public Task<bool> IsInRoleAsync(TUser user, string roleName)
         {
-            throw new NotImplementedException();
+            return Task.Factory.StartNew(() =>
+            {
+                //does this role exist?
+                var result = false;
+                //var predicateRole = Predicates.Field<IdentityRole>(f => f.Name, Operator.Eq, roleName);
+                //var roleItem = Connection.Get<IdentityRole>(predicateRole);
+
+                var roleItem = Connection.Query<IdentityRole>("SELECT * FROM IdentityRole WHERE Name = @roleName", new { roleName }).FirstOrDefault();
+                if (roleItem != null)
+                {
+                    //does this user & role combo already exist?
+                    //var pg = new PredicateGroup { Operator = GroupOperator.And, Predicates = new List<IPredicate>() };
+                    //pg.Predicates.Add(Predicates.Field<IdentityUserRole>(f => f.UserId, Operator.Eq, user.Id));
+                    //pg.Predicates.Add(Predicates.Field<IdentityUserRole>(f => f.RoleId, Operator.Eq, roleItem.Id));
+                    //var roleUserItem = Connection.Get<IdentityUserRole>(pg);
+
+                    var roleUserItem = Connection.Query<IdentityUserRole>("SELECT * FROM IdentityUserRole WHERE UserId = @Id AND RoleId = @RoleId", new { user.Id, RoleId = roleItem.Id }).FirstOrDefault();
+
+                    if (roleUserItem != null)
+                    {
+                        result = true;
+                    }
+                }
+                return result;
+            });
         }
 
         public Task SetSecurityStampAsync(TUser user, string stamp)
         {
-            throw new NotImplementedException();
+            return Task.Factory.StartNew(() => user.SecurityStamp = stamp);
         }
 
         public Task<string> GetSecurityStampAsync(TUser user)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(user.SecurityStamp);
         }
 
         public Task SetPhoneNumberAsync(TUser user, string phoneNumber)
         {
-            throw new NotImplementedException();
+            return Task.Factory.StartNew(() => user.PhoneNumber = phoneNumber);
         }
 
         public Task<string> GetPhoneNumberAsync(TUser user)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(user.PhoneNumber);
         }
 
         public Task<bool> GetPhoneNumberConfirmedAsync(TUser user)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(user.PhoneNumberConfirmed);
         }
 
         public Task SetPhoneNumberConfirmedAsync(TUser user, bool confirmed)
         {
-            throw new NotImplementedException();
+            return Task.Factory.StartNew(() => user.PhoneNumberConfirmed = confirmed);
         }
 
-        public IQueryable<TUser> Users { get; private set; }
+        //public IQueryable<TUser> Users {
+        //    get
+        //    {
+        //        return Connection.GetList<TUser>().AsQueryable();   
+        //    }
+        //    private set
+        //    {
+                
+        //    }}
+
         public Task SetEmailAsync(TUser user, string email)
         {
-            throw new NotImplementedException();
+            return Task.Factory.StartNew(() => user.Email = email);
         }
 
         public Task<string> GetEmailAsync(TUser user)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(user.Email);
         }
 
         public Task<bool> GetEmailConfirmedAsync(TUser user)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(user.EmailConfirmed);
         }
 
         public Task SetEmailConfirmedAsync(TUser user, bool confirmed)
         {
-            throw new NotImplementedException();
+            return Task.Factory.StartNew(() => user.EmailConfirmed = confirmed);
         }
 
         public Task<TUser> FindByEmailAsync(string email)
         {
-            throw new NotImplementedException();
+            return Task.Factory.StartNew(() => Connection.Query<TUser>("SELECT * FROM IdentityUser WHERE Email = @email", new { email }).FirstOrDefault());
         }
 
         public Task SetTwoFactorEnabledAsync(TUser user, bool enabled)
         {
-            throw new NotImplementedException();
+            return Task.Factory.StartNew(() => user.TwoFactorEnabled = enabled);
         }
 
         public Task<bool> GetTwoFactorEnabledAsync(TUser user)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(user.TwoFactorEnabled);
         }
     }
 }

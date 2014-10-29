@@ -17,9 +17,9 @@ using NetArgot.Models.Identity;
 namespace NetArgot.Identity
 {
     // Configure the application user manager used in this application. UserManager is defined in ASP.NET Identity and is used by the application.
-    public class IdentityUserManager : UserManager<ApplicationUser, int>
+    public class IdentityUserManager : UserManager<IdentityUser, int>
     {
-        public IdentityUserManager(IUserStore<ApplicationUser, int> store)
+        public IdentityUserManager(IUserStore<IdentityUser, int> store)
             : base(store)
         {
         }
@@ -27,9 +27,9 @@ namespace NetArgot.Identity
         public static IdentityUserManager Create(IdentityFactoryOptions<IdentityUserManager> options, IOwinContext context)
         {
             var manager = new IdentityUserManager(
-                new IdentityUserStore<ApplicationUser>(context.Get<ApplicationDbContext>()));
+                new IdentityUserStore<IdentityUser>(context.Get<ApplicationDbContext>()));
             // Configure validation logic for usernames
-            manager.UserValidator = new UserValidator<ApplicationUser, int>(manager)
+            manager.UserValidator = new UserValidator<IdentityUser, int>(manager)
             {
                 AllowOnlyAlphanumericUserNames = false,
                 RequireUniqueEmail = true
@@ -52,11 +52,11 @@ namespace NetArgot.Identity
 
             // Register two factor authentication providers. This application uses Phone and Emails as a step of receiving a code for verifying the user
             // You can write your own provider and plug it in here.
-            manager.RegisterTwoFactorProvider("Phone Code", new PhoneNumberTokenProvider<ApplicationUser, int>
+            manager.RegisterTwoFactorProvider("Phone Code", new PhoneNumberTokenProvider<IdentityUser, int>
             {
                 MessageFormat = "Your security code is {0}"
             });
-            manager.RegisterTwoFactorProvider("Email Code", new EmailTokenProvider<ApplicationUser, int>
+            manager.RegisterTwoFactorProvider("Email Code", new EmailTokenProvider<IdentityUser, int>
             {
                 Subject = "Security Code",
                 BodyFormat = "Your security code is {0}"
@@ -67,7 +67,7 @@ namespace NetArgot.Identity
             if (dataProtectionProvider != null)
             {
                 manager.UserTokenProvider =
-                    new DataProtectorTokenProvider<ApplicationUser, int>(dataProtectionProvider.Create("ASP.NET Identity"));
+                    new DataProtectorTokenProvider<IdentityUser, int>(dataProtectionProvider.Create("ASP.NET Identity"));
             }
             return manager;
         }

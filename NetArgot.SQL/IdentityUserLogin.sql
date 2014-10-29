@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[IdentityUserLogin]
 (
-	[UserId] INT IDENTITY (1, 1) NOT NULL,
+	[UserId] INT NOT NULL,
     [LoginProvider] NVARCHAR(200) NOT NULL, 
     [ProviderKey] NVARCHAR(200) NOT NULL,
 	CONSTRAINT [PK_dbo.IdentityUserLogin] PRIMARY KEY CLUSTERED ([UserId] ASC)
