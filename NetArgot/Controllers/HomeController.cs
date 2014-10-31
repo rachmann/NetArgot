@@ -6,6 +6,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Dapper;
 using DapperExtensions;
 using NetArgot.Models;
 
@@ -15,7 +16,7 @@ namespace NetArgot.Controllers
     {
         public ActionResult Index()
         {
-            //var car = GetCarByName("Volvo");
+            var car = GetCarByName("Volvo");
             return View();
         }
 
@@ -23,8 +24,10 @@ namespace NetArgot.Controllers
         {
             using (DbConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString))
             {
-                var predicate = Predicates.Field<Car>(f => f.Name, Operator.Like, name);
-                return connection.Get<Car>(predicate);
+                IList<Car> cars = connection.GetList<Car>(Predicates.Field<Car>(f => f.Name, Operator.Eq, name)).ToList();
+                //Car car = connection.Query<Car>("SELECT * from Car WHERE Name = @name",new{ name });
+
+                return cars.FirstOrDefault();
             }
         }
         public ActionResult About()
