@@ -14,17 +14,19 @@ using Microsoft.Owin;
 using NetArgot.Models;
 using NetArgot.Models.Identity;
 
+//  IUserLockoutStore<TUser>.
 namespace NetArgot.Identity
 {
     public class IdentityUserStore<TUser> :
-        IUserLoginStore<TUser, int>,
+        IUserLoginStore<TUser, int>,          
         IUserClaimStore<TUser, int>,
         IUserPasswordStore<TUser, int>,
         IUserRoleStore<TUser, int>,
         IUserSecurityStampStore<TUser, int>,
         IUserPhoneNumberStore<TUser, int>,
         IUserEmailStore<TUser, int>,
-        IUserTwoFactorStore<TUser, int>
+        IUserTwoFactorStore<TUser, int>,
+        IUserLockoutStore<TUser, int>
         where TUser : IdentityUser //IQueryableUserStore<TUser, int>,
     {
 
@@ -474,6 +476,41 @@ namespace NetArgot.Identity
         public Task<bool> GetTwoFactorEnabledAsync(TUser user)
         {
             return Task.FromResult(user.TwoFactorEnabled);
+        }
+
+        public Task<DateTimeOffset> GetLockoutEndDateAsync(TUser user)
+        {
+            return Task.FromResult(new DateTimeOffset(user.LockoutEndDateUtc.GetValueOrDefault()));
+        }
+
+        public Task SetLockoutEndDateAsync(TUser user, DateTimeOffset lockoutEnd)
+        {
+            return Task.Factory.StartNew(() => user.LockoutEndDateUtc = lockoutEnd.DateTime);
+        }
+
+        public Task<int> IncrementAccessFailedCountAsync(TUser user)
+        {
+            return Task.Factory.StartNew(() => user.AccessFailedCount++);
+        }
+
+        public Task ResetAccessFailedCountAsync(TUser user)
+        {
+            return Task.Factory.StartNew(() => user.AccessFailedCount = 0);
+        }
+
+        public Task<int> GetAccessFailedCountAsync(TUser user)
+        {
+            return Task.FromResult(user.AccessFailedCount);
+        }
+
+        public Task<bool> GetLockoutEnabledAsync(TUser user)
+        {
+            return Task.FromResult(user.LockoutEnabled);
+        }
+
+        public Task SetLockoutEnabledAsync(TUser user, bool enabled)
+        {
+            return Task.Factory.StartNew(() => user.LockoutEnabled = enabled);
         }
     }
 }

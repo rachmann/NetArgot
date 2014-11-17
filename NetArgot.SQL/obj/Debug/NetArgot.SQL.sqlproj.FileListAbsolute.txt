@@ -3,3 +3,7 @@ C:\Projects\NetArgot\NetArgot.SQL\bin\Debug\NetArgot.SQL.dll
 C:\Projects\NetArgot\NetArgot.SQL\bin\Debug\NetArgot.SQL.pdb
 C:\Projects\NetArgot\NetArgot.SQL\obj\Debug\NetArgot.SQL.dll
 C:\Projects\NetArgot\NetArgot.SQL\obj\Debug\NetArgot.SQL.pdb
+C:\Projects\NetArgot\NetArgot.SQL\obj\Debug\Model.xml
+C:\Projects\NetArgot\NetArgot.SQL\obj\Debug\refactor.xml
+C:\Projects\NetArgot\NetArgot.SQL\obj\Debug\postdeploy.sql
+C:\Projects\NetArgot\NetArgot.SQL\obj\Debug\predeploy.sql

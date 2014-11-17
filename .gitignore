@@ -8,6 +8,12 @@ Desktop.ini
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
 
+NetArgot/bin/
+NetArgot/obj/
+NetArgot.SQL/bin/
+NetArgot.SQL/obj/
+packages/
+
 # Windows Installer files
 *.cab
 *.msi
