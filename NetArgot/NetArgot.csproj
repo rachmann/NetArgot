@@ -169,23 +169,11 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
-    <Compile Include="DataStore\IdentityDbContext.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Identity\IdentityRoleStore.cs" />
-    <Compile Include="Identity\IdentityUserManager.cs" />
-    <Compile Include="Identity\IdentityUserStore.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Car.cs" />
-    <Compile Include="Models\IdentityModels.cs" />
-    <Compile Include="Models\Identity\IdentityRole.cs" />
-    <Compile Include="Models\Identity\IdentityUser.cs" />
-    <Compile Include="Models\Identity\IdentityUserClaim.cs" />
-    <Compile Include="Models\Identity\IdentityUserClaimJoined.cs" />
-    <Compile Include="Models\Identity\IdentityUserClaimType.cs" />
-    <Compile Include="Models\Identity\IdentityUserLogin.cs" />
-    <Compile Include="Models\Identity\IdentityUserRole.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
@@ -262,10 +250,23 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="DataStore\" />
+    <Folder Include="Identity\" />
+    <Folder Include="Models\Identity\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
     <None Include="Project_Readme.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NetArgot.Identity\NetArgot.Identity.csproj">
+      <Project>{7eddf76a-c806-4216-8f65-d309c1f365c2}</Project>
+      <Name>NetArgot.Identity</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NetArgot.Models\NetArgot.Models.csproj">
+      <Project>{0a269f6a-2025-4999-b435-9a7c2a4463d3}</Project>
+      <Name>NetArgot.Models</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

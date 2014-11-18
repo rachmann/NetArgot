@@ -1,0 +1,14 @@
+C:\dev\NetArgot\NetArgot.DataStore\obj\Debug\NetArgot.DataStore.csprojResolveAssemblyReference.cache
+C:\dev\NetArgot\NetArgot.DataStore\bin\Debug\NetArgot.DataStore.dll
+C:\dev\NetArgot\NetArgot.DataStore\bin\Debug\NetArgot.DataStore.pdb
+C:\dev\NetArgot\NetArgot.DataStore\bin\Debug\Dapper.dll
+C:\dev\NetArgot\NetArgot.DataStore\bin\Debug\DapperExtensions.dll
+C:\dev\NetArgot\NetArgot.DataStore\bin\Debug\Microsoft.AspNet.Identity.Core.dll
+C:\dev\NetArgot\NetArgot.DataStore\bin\Debug\NetArgot.Models.dll
+C:\dev\NetArgot\NetArgot.DataStore\bin\Debug\NetArgot.Models.pdb
+C:\dev\NetArgot\NetArgot.DataStore\bin\Debug\Dapper.pdb
+C:\dev\NetArgot\NetArgot.DataStore\bin\Debug\Dapper.xml
+C:\dev\NetArgot\NetArgot.DataStore\bin\Debug\DapperExtensions.pdb
+C:\dev\NetArgot\NetArgot.DataStore\bin\Debug\Microsoft.AspNet.Identity.Core.xml
+C:\dev\NetArgot\NetArgot.DataStore\obj\Debug\NetArgot.DataStore.dll
+C:\dev\NetArgot\NetArgot.DataStore\obj\Debug\NetArgot.DataStore.pdb
